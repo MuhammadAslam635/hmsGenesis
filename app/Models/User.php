@@ -18,9 +18,12 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'firstname',
+        'lastname',
         'email',
         'password',
+        'role',
+        'profile_photo',
     ];
 
     /**
@@ -44,5 +47,87 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function hospitalAdmins()
+
+    {
+
+        return $this->hasMany(HospitalAdmin::class, 'created_by');
+
+    }
+
+
+    /**
+
+     * Get the doctors created by the user.
+
+     */
+
+    public function doctors()
+
+    {
+
+        return $this->hasMany(Doctor::class, 'created_by');
+
+    }
+
+
+    /**
+
+     * Get the employees created by the user.
+
+     */
+
+    public function employees()
+
+    {
+
+        return $this->hasMany(Employee::class, 'created_by');
+
+    }
+
+
+    /**
+
+     * Get the patients created by the user.
+
+     */
+
+    public function patients()
+
+    {
+
+        return $this->hasMany(Patient::class, 'created_by');
+
+    }
+
+
+    /**
+
+     * Get the system settings created by the user.
+
+     */
+
+    public function systemSettings()
+
+    {
+
+        return $this->hasMany(SystemSetting::class, 'created_by');
+
+    }
+
+
+    /**
+
+     * Get the OpenAI models created by the user.
+
+     */
+
+    public function openAiModels()
+
+    {
+
+        return $this->hasMany(OpenAiModel::class, 'created_by');
+
     }
 }

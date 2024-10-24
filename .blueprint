@@ -1,0 +1,116 @@
+created:
+    - database/factories/MaterialFactory.php
+    - database/factories/ProductFactory.php
+    - database/factories/ProductBadgeFactory.php
+    - database/factories/SalesmanFactory.php
+    - database/factories/HospitalFactory.php
+    - database/factories/HospitalAdminFactory.php
+    - database/factories/DoctorFactory.php
+    - database/factories/EmployeeFactory.php
+    - database/factories/PatientFactory.php
+    - database/factories/RoomFactory.php
+    - database/factories/BedFactory.php
+    - database/factories/LaboratoryFactory.php
+    - database/factories/TestFactory.php
+    - database/factories/PharmacyFactory.php
+    - database/factories/MedicationFactory.php
+    - database/factories/AppointmentFactory.php
+    - database/factories/OnlineAppointmentFactory.php
+    - database/factories/PrescriptionFactory.php
+    - database/factories/PatientHistoryFactory.php
+    - database/factories/StaffAppointmentFactory.php
+    - database/factories/BloodBankFactory.php
+    - database/factories/DonorFactory.php
+    - database/factories/BloodDonationFactory.php
+    - database/factories/SystemSettingFactory.php
+    - database/factories/OpenAiModelFactory.php
+    - database/factories/OrderFactory.php
+    - database/factories/OrderItemFactory.php
+    - database/factories/TransactionFactory.php
+    - database/migrations/2024_10_24_082121_create_materials_table.php
+    - database/migrations/2024_10_24_082122_create_products_table.php
+    - database/migrations/2024_10_24_082123_create_product_badges_table.php
+    - database/migrations/2024_10_24_082124_create_salesmen_table.php
+    - database/migrations/2024_10_24_082125_create_hospitals_table.php
+    - database/migrations/2024_10_24_082126_create_hospital_admins_table.php
+    - database/migrations/2024_10_24_082127_create_doctors_table.php
+    - database/migrations/2024_10_24_082128_create_employees_table.php
+    - database/migrations/2024_10_24_082129_create_patients_table.php
+    - database/migrations/2024_10_24_082130_create_rooms_table.php
+    - database/migrations/2024_10_24_082131_create_beds_table.php
+    - database/migrations/2024_10_24_082132_create_laboratories_table.php
+    - database/migrations/2024_10_24_082133_create_tests_table.php
+    - database/migrations/2024_10_24_082134_create_pharmacies_table.php
+    - database/migrations/2024_10_24_082135_create_medications_table.php
+    - database/migrations/2024_10_24_082136_create_appointments_table.php
+    - database/migrations/2024_10_24_082137_create_online_appointments_table.php
+    - database/migrations/2024_10_24_082138_create_prescriptions_table.php
+    - database/migrations/2024_10_24_082139_create_patient_histories_table.php
+    - database/migrations/2024_10_24_082140_create_staff_appointments_table.php
+    - database/migrations/2024_10_24_082141_create_blood_banks_table.php
+    - database/migrations/2024_10_24_082142_create_donors_table.php
+    - database/migrations/2024_10_24_082143_create_blood_donations_table.php
+    - database/migrations/2024_10_24_082144_create_system_settings_table.php
+    - database/migrations/2024_10_24_082145_create_open_ai_models_table.php
+    - database/migrations/2024_10_24_082146_create_orders_table.php
+    - database/migrations/2024_10_24_082147_create_order_items_table.php
+    - database/migrations/2024_10_24_082148_create_transactions_table.php
+    - app/Models/Material.php
+    - app/Models/Product.php
+    - app/Models/ProductBadge.php
+    - app/Models/Salesman.php
+    - app/Models/Hospital.php
+    - app/Models/HospitalAdmin.php
+    - app/Models/Doctor.php
+    - app/Models/Employee.php
+    - app/Models/Patient.php
+    - app/Models/Room.php
+    - app/Models/Bed.php
+    - app/Models/Laboratory.php
+    - app/Models/Test.php
+    - app/Models/Pharmacy.php
+    - app/Models/Medication.php
+    - app/Models/Appointment.php
+    - app/Models/OnlineAppointment.php
+    - app/Models/Prescription.php
+    - app/Models/PatientHistory.php
+    - app/Models/StaffAppointment.php
+    - app/Models/BloodBank.php
+    - app/Models/Donor.php
+    - app/Models/BloodDonation.php
+    - app/Models/SystemSetting.php
+    - app/Models/OpenAiModel.php
+    - app/Models/Order.php
+    - app/Models/OrderItem.php
+    - app/Models/Transaction.php
+models:
+    Appointment: { doctor_id: 'id foreign:doctors', patient_id: 'id foreign:patients', appointment_date: datetime, status: 'enum:scheduled,completed,cancelled', type: 'enum:online,physical', symptoms: 'text nullable', softdeletes: softDeletes, relationships: { belongsTo: 'Doctor Patient' } }
+    Bed: { room_id: 'id foreign:rooms', patient_id: 'id foreign:patients nullable', bed_number: string, status: 'enum:available,occupied', softdeletes: softDeletes, relationships: { belongsTo: 'Room Patient' } }
+    BloodBank: { hospital_id: 'id foreign:hospitals', name: string, address: 'string nullable', contact_number: 'string nullable', email: 'string nullable', softdeletes: softDeletes, relationships: { belongsTo: Hospital, hasMany: BloodDonation } }
+    BloodDonation: { blood_bank_id: 'id foreign:blood_banks', donor_id: 'id foreign:donors', blood_type: 'enum:A+, A-, B+, B-, AB+, AB-, O+, O-', units: integer, donation_date: datetime, softdeletes: softDeletes, relationships: { belongsTo: 'BloodBank Donor' } }
+    Doctor: { hospital_id: 'id foreign:hospitals', user_id: 'id foreign:users', created_by: 'id foreign:hospital_admins', specialization: 'json nullable', softdeletes: softDeletes, relationships: { belongsTo: 'Hospital HospitalAdmin User', hasMany: 'Appointment Prescription' } }
+    Donor: { name: string, age: integer, gender: 'enum:male,female,other', contact_number: string, address: string, email: 'string nullable', user_id: 'id foreign:users', created_by: 'id foreign:employees', softdeletes: softDeletes, relationships: { hasMany: BloodDonation } }
+    Embeddings: { hospital_id: biginteger, embeddings: 'string:128', content: text, type: 'string nullable', sourcetype: 'string nullable', sourcename: 'string nullable' }
+    Employee: { hospital_id: 'id foreign:hospitals', user_id: 'id foreign:users', created_by: 'id foreign:hospital_admins', role: 'enum:admin,nurse,pharmacist,technician', softdeletes: softDeletes, relationships: { belongsTo: 'Hospital HospitalAdmin User' } }
+    Hospital: { name: string, slug: 'string unique', address: 'string nullable', contact_number: 'string nullable', email: 'string nullable', created_by: 'id foreign:users', softdeletes: softDeletes, relationships: { hasMany: 'HospitalAdmin Doctor Employee Room Laboratory Pharmacy BloodBank' } }
+    HospitalAdmin: { hospital_id: 'id foreign:hospitals', user_id: 'id foreign:users', created_by: 'id foreign:users', softdeletes: softDeletes, relationships: { belongsTo: 'Hospital User' } }
+    Laboratory: { hospital_id: 'id foreign:hospitals', name: string, address: 'string nullable', contact_number: 'string nullable', email: 'string nullable', softdeletes: softDeletes, relationships: { belongsTo: Hospital, hasMany: Test } }
+    Medication: { pharmacy_id: 'id foreign:pharmacies', name: string, description: 'text nullable', price: 'decimal:10,2', discount: 'decimal:10,2 nullable', company: 'string nullable', qty: integer, sale_qty: integer, return_qty: integer, expiry_date: date, softdeletes: softDeletes, relationships: { belongsTo: Pharmacy } }
+    OnlineAppointment: { doctor_id: 'id foreign:doctors', patient_id: 'id foreign:patients', appointment_date: datetime, status: 'enum:scheduled,completed,cancelled', link: 'string nullable', duration: 'integer nullable', start_time: datetime, end_time: datetime, symptoms: 'text nullable', softdeletes: softDeletes, relationships: { belongsTo: 'Doctor Patient' } }
+    OpenAiModel: { model_name: string, model_key: string, created_by: 'id foreign:users', softdeletes: softDeletes, relationships: { belongsTo: User } }
+    Patient: { name: string, age: integer, gender: 'enum:male,female,other', contact_number: string, address: string, email: 'string nullable', user_id: 'id foreign:users', created_by: 'id foreign:employees', softdeletes: softDeletes, relationships: { hasMany: 'Appointment Prescription PatientHistory' } }
+    PatientHistory: { patient_id: 'id foreign:patients', history: 'text nullable', checked_by: 'id foreign:doctors', softdeletes: softDeletes, relationships: { belongsTo: 'Patient Doctor' } }
+    Pharmacy: { hospital_id: 'id foreign:hospitals', name: string, address: 'string nullable', contact_number: string, email: 'string nullable', softdeletes: softDeletes, relationships: { belongsTo: Hospital, hasMany: Medication } }
+    Prescription: { doctor_id: 'id foreign:doctors', patient_id: 'id foreign:patients', medication: string, dosage: string, instructions: 'text nullable', date_issued: date, softdeletes: softDeletes, relationships: { belongsTo: 'Doctor Patient' } }
+    Room: { hospital_id: 'id foreign:hospitals', room_number: string, type: 'enum:single,double,ward', status: 'enum:available,occupied', softdeletes: softDeletes, relationships: { hasMany: Bed, belongsTo: Hospital } }
+    StaffAppointment: { employee_id: 'id foreign:employees', appointment_id: 'id foreign:appointments', role: 'enum:admin,nurse,pharmacist,technician', softdeletes: softDeletes, relationships: { belongsTo: 'Employee Appointment' } }
+    SystemSetting: { key: 'string unique', value: string, created_by: 'id foreign:users', softdeletes: softDeletes, relationships: { belongsTo: User } }
+    Test: { laboratory_id: 'id foreign:laboratories', patient_id: 'id foreign:patients', name: string, description: 'text nullable', price: 'decimal:10,2', tested_by: 'id foreign:employees', softdeletes: softDeletes, relationships: { belongsTo: 'Laboratory Employee' } }
+    User: { firstname: string, lastname: string, email: string, role: "string default:'user'::character varying", email_verified_at: 'timestamp nullable', password: string, profile_photo: "string default:'user.png'::character varying", remember_token: 'string:100 nullable' }
+    Material: { name: string, description: 'text nullable', price: 'decimal:10,2', qty: 'decimal:5,2', qty_type: 'enum:kg,ltr,inches', created_by: 'id foreign:users', softdeletes: softDeletes, relationships: { hasMany: 'Product User' } }
+    Product: { material_id: 'id foreign:materials', name: string, description: 'text nullable', price: 'decimal:10,2', manufacture_date: 'date nullable', expiry_date: 'date nullable', qty: integer, sale_qty: 'integer default(0)', created_by: 'id foreign:users', softdeletes: softDeletes, relationships: { belongsTo: Material, hasMany: 'Salesman OrderItem' } }
+    ProductBadge: { product_id: 'id foreign:products', badge: 'string unique', qty: integer, created_by: 'id foreign:users', softdeletes: softDeletes, relationships: { belongsTo: 'Product User' } }
+    Salesman: { user_id: 'id foreign:users', name: string, contact_number: string, address: string, email: 'string nullable', created_by: 'id foreign:users', softdeletes: softDeletes, relationships: { belongsTo: User } }
+    Order: { pharmacy_id: 'id foreign:pharmacies', salesman_id: 'id foreign:salesmans', delivery_date: 'date nullable', total: 'double:12,2 default(0.0)', subtotal: 'double:12,2 default(0.0)', discount: 'double:12,2 default(0.0)', order_status: 'enum:pending,ordered,process,dispatch,completed,cancelled', cancel_date: 'date nullable', canceling_reason: 'text nullable', relationships: { belongsTo: 'Pharmacy Salesman', hasMany: 'OrderItem Transaction' } }
+    OrderItem: { order_id: 'id foreign:orders', product_id: 'id foreign:products', qty: integer, price: 'double:8,2', relationships: { belongsTo: 'Order Product' } }
+    Transaction: { order_id: 'id foreign:orders', payment_mode: 'enum:cod,card,online', payment_status: 'enum:paid,partial,pending', amount: 'double:10,2', remaining_amount: 'double:10,2 default(0.0)', order_total: 'double:12,2 default(0 .0)', relationships: { belongsTo: Order } }

@@ -1,0 +1,359 @@
+models:
+  Material:
+    name: string
+    description: text nullable
+    price: decimal:10,2
+    qty: decimal:5,2
+    qty_type: enum:kg,ltr,inches
+    created_by: id foreign:users
+    softDeletes: true
+    relationships:
+      hasMany:
+        - Product
+        - User
+
+  Product:
+    material_id: id foreign:materials
+    name: string
+    description: text nullable
+    price: decimal:10,2
+    manufacture_date: date nullable
+    expiry_date: date nullable
+    qty: integer
+    sale_qty: integer default(0)
+    created_by: id foreign:users
+    softDeletes: true
+    relationships:
+      belongsTo: Material
+      hasMany:
+        - Salesman
+        - OrderItem
+
+  ProductBadge:
+    product_id: id foreign:products
+    badge: string unique
+    qty: integer
+    created_by: id foreign:users
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - Product
+        - User
+
+  Salesman:
+    user_id: id foreign:users
+    name: string
+    contact_number: string
+    address: string
+    email: string nullable
+    created_by: id foreign:users
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - User
+
+  Hospital:
+    name: string
+    slug: string unique
+    address: string nullable
+    contact_number: string nullable
+    email: string nullable
+    created_by: id foreign:users
+    softDeletes: true
+    relationships:
+      hasMany:
+        - HospitalAdmin
+        - Doctor
+        - Employee
+        - Room
+        - Laboratory
+        - Pharmacy
+        - BloodBank
+
+  HospitalAdmin:
+    hospital_id: id foreign:hospitals
+    user_id: id foreign:users
+    created_by: id foreign:users
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - Hospital
+        - User
+
+  Doctor:
+    hospital_id: id foreign:hospitals
+    user_id: id foreign:users
+    created_by: id foreign:hospital_admins
+    specialization: json nullable
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - Hospital
+        - HospitalAdmin
+        - User
+      hasMany:
+        - Appointment
+        - Prescription
+
+  Employee:
+    hospital_id: id foreign:hospitals
+    user_id: id foreign:users
+    created_by: id foreign:hospital_admins
+    role: enum:admin,nurse,pharmacist,technician
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - Hospital
+        - HospitalAdmin
+        - User
+
+  Patient:
+    name: string
+    age: integer
+    gender: enum:male,female,other
+    contact_number: string
+    address: string
+    email: string nullable
+    user_id: id foreign:users
+    created_by: id foreign:employees
+    softDeletes: true
+    relationships:
+      hasMany:
+        - Appointment
+        - Prescription
+        - PatientHistory
+
+  Room:
+    hospital_id: id foreign:hospitals
+    room_number: string
+    type: enum:single,double,ward
+    status: enum:available,occupied
+    softDeletes: true
+    relationships:
+      hasMany:
+        - Bed
+      belongsTo:
+        - Hospital
+
+  Bed:
+    room_id: id foreign:rooms
+    patient_id: id foreign:patients nullable
+    bed_number: string
+    status: enum:available,occupied
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - Room
+        - Patient
+
+  Laboratory:
+    hospital_id: id foreign:hospitals
+    name: string
+    address: string nullable
+    contact_number: string nullable
+    email: string nullable
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - Hospital
+      hasMany:
+        - Test
+
+  Test:
+    laboratory_id: id foreign:laboratories
+    patient_id: id foreign:patients
+    name: string
+    description: text nullable
+    price: decimal:10,2
+    tested_by: id foreign:employees
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - Laboratory
+        - Employee
+
+  Pharmacy:
+    hospital_id: id foreign:hospitals
+    name: string
+    address: string nullable
+    contact_number: string
+    email: string nullable
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - Hospital
+      hasMany: Medication
+
+  Medication:
+    pharmacy_id: id foreign:pharmacies
+    name: string
+    description: text nullable
+    price: decimal:10,2
+    discount: decimal:10,2 nullable
+    company: string nullable
+    qty: integer
+    sale_qty: integer
+    return_qty: integer
+    expiry_date: date
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - Pharmacy
+
+  Appointment:
+    doctor_id: id foreign:doctors
+    patient_id: id foreign:patients
+    appointment_date: datetime
+    status: enum:scheduled,completed,cancelled
+    type: enum:online,physical
+    symptoms: text nullable
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - Doctor
+        - Patient
+
+  OnlineAppointment:
+    doctor_id: id foreign:doctors
+    patient_id: id foreign:patients
+    appointment_date: datetime
+    status: enum:scheduled,completed,cancelled
+    link: string nullable
+    duration: integer nullable
+    start_time: datetime
+    end_time: datetime
+    symptoms: text nullable
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - Doctor
+        - Patient
+
+  Prescription:
+    doctor_id: id foreign:doctors
+    patient_id: id foreign:patients
+    medication: string
+    dosage: string
+    instructions: text nullable
+    date_issued: date
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - Doctor
+        - Patient
+
+  PatientHistory:
+    patient_id: id foreign:patients
+    history: text nullable
+    checked_by: id foreign:doctors
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - Patient
+        - Doctor
+
+  StaffAppointment:
+    employee_id: id foreign:employees
+    appointment_id: id foreign:appointments
+    role: enum:admin,nurse,pharmacist,technician
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - Employee
+        - Appointment
+
+  BloodBank:
+    hospital_id: id foreign:hospitals
+    name: string
+    address: string nullable
+    contact_number: string nullable
+    email: string nullable
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - Hospital
+      hasMany:
+        - BloodDonation
+
+  Donor:
+    name: string
+    age: integer
+    gender: enum:male,female,other
+    contact_number: string
+    address: string
+    email: string nullable
+    user_id: id foreign:users
+    created_by: id foreign:employees
+    softDeletes: true
+    relationships:
+      hasMany:
+        - BloodDonation
+
+  BloodDonation:
+    blood_bank_id: id foreign:blood_banks
+    donor_id: id foreign:donors
+    blood_type: enum:A+, A-, B+, B-, AB+, AB-, O+, O-
+    units: integer
+    donation_date: datetime
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - BloodBank
+        - Donor
+
+  SystemSetting:
+    key: string unique
+    value: string
+    created_by: id foreign:users
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - User
+
+  OpenAiModel:
+    model_name: string
+    model_key: string
+    created_by: id foreign:users
+    softDeletes: true
+    relationships:
+      belongsTo:
+        - User
+
+  Order:
+    pharmacy_id: id foreign:pharmacies
+    salesman_id: id foreign:salesmans
+    delivery_date: date nullable
+    total: double:12,2 default(0.0)
+    subtotal: double:12,2 default(0.0)
+    discount: double:12,2 default(0.0)
+    order_status: enum:pending,ordered,process,dispatch,completed,cancelled
+    cancel_date: date nullable
+    canceling_reason: text nullable
+    relationships:
+      belongsTo:
+        - Pharmacy
+        - Salesman
+      hasMany:
+        - OrderItem
+        - Transaction
+
+  OrderItem:
+    order_id: id foreign:orders
+    product_id: id foreign:products
+    qty: integer
+    price: double:8,2
+    relationships:
+      belongsTo:
+        - Order
+        - Product
+
+  Transaction:
+    order_id: id foreign:orders
+    payment_mode: enum:cod,card,online
+    payment_status: enum:paid,partial,pending
+    amount: double:10,2
+    remaining_amount: double:10,2 default(0.0)
+    order_total: double:12,2 default(0 .0)
+    relationships:
+      belongsTo:
+        - Order
